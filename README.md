@@ -7,4 +7,5 @@ Louisiana Youth &amp; Government Alternative Vote (YAV) tallying tool. Ranks the
 
 # Download
 * [Version 1.0](https://github.com/gbarks/YAV-Election-Analyzer/releases/download/v1.0/YAV.Election.Analyzer.v1.0.zip)
+
 Executable requires Java to be installed.
