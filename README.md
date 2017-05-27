@@ -6,4 +6,5 @@ Louisiana Youth &amp; Government Alternative Vote (YAV) tallying tool. Ranks the
 * [How IRV is implemented to find multiple winners in this program](https://groups.google.com/forum/#!topic/openstv/m9sRnN7yQTs)
 
 # Download
-[Version 1.0](https://github.com/gbarks/YAV-Election-Analyzer/releases/download/v1.0/YAV.Election.Analyzer.v1.0.zip) - Executable requires Java to be installed.
+* [Version 1.0](https://github.com/gbarks/YAV-Election-Analyzer/releases/download/v1.0/YAV.Election.Analyzer.v1.0.zip)
+Executable requires Java to be installed.
