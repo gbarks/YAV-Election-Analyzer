@@ -42,6 +42,18 @@ public class YAV_Config {
 	}
 
 	/**
+	 * Removes the indicated election
+	 * @param election Name of the election to remove
+	 */
+	public void removeElection(String election) {
+		numOfPositions -= positions.get(election);
+		numOfElections--;
+		candidates.remove(election);
+		positions.remove(election);
+		elections.remove(election);
+	}
+
+	/**
 	 * Adds the candidate to the list of candidates for the specified election
 	 * @param election Name of the election/top position (eg. "Speaker of the House")
 	 * @param candidate Name of the candidate
