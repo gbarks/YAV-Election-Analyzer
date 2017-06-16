@@ -1,3 +1,5 @@
+package YAV_Election_Analyzer;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -9,6 +11,7 @@ import java.io.PrintStream;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,24 +35,24 @@ public class YAV_Frame extends JFrame implements ActionListener {
 											 "40        50        " +
 											 "60        70        8";
 	public enum Analyzer {IRV};	// Currently unused - in place for a drop-down of different analysis types
-	public enum FileType {CFG, TSV};
 	private Font sysFont;
-	private int defaultWidth;
+	private int ballotStartColumn, defaultWidth;
 	private JTextArea textOut;
 	private PrintStream console;
-	private JButton cfgOpenB, tsvOpenB, analyzeB, cfgGenerateB;
+	private JButton tsvOpenB, exportB;
+	private JComboBox columnCB;
+	private JLabel columnL;
 	private JPanel mainPanel, buttonPanel;
 	private JFileChooser fileChooser;
-	private File cfgFile, tsvFile;
-	private FileFilter cfgFilter, tsvFilter;
-	private boolean cfgIsValid, tsvIsValid;
-	private final int ballotStartColumn = 6;
+	private File tsvFile;
+	private FileFilter tsvFilter;
+	private boolean tsvIsValid;
 	private IRV_Analysis analyzer;
-	private YAV_Config cfg;
+	private YAV_Config config;
 	private YAV_Ballot_Box ybb;
 	
 	public YAV_Frame() {
-		cfg = new YAV_Config();
+		config = new YAV_Config();
 		
 		this.setTitle("Youth & Government Alternative Vote Election Analyzer");
 		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -72,35 +75,45 @@ public class YAV_Frame extends JFrame implements ActionListener {
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setOpaque(true);
 
-		cfgOpenB = new JButton("Open .cfg");
+		/*cfgOpenB = new JButton("Open .cfg");
 		cfgOpenB.setToolTipText("The .cfg file contains election information");
 		cfgOpenB.addActionListener(this);
-		/*cfgGenerateB = new JButton("Generate Template .cfg");		// This will be a wizard in a future build.
+		cfgGenerateB = new JButton("Generate Template .cfg");		// This will be a wizard in a future build.
 		cfgGenerateB.setToolTipText("Grant, fill this out later"); 	// The current .cfg generator simply saves a
 		cfgGenerateB.addActionListener(this);*/						//  sample .cfg somewhere, which is redundant
+		columnL = new JLabel("Column Offset:", JLabel.RIGHT);
+		columnL.setToolTipText("Column in the .tsv where voting data begins");
+		String[] columns = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"};
+		columnCB = new JComboBox(columns);
+		columnCB.setSelectedItem("F");
+		ballotStartColumn = 6;
+		columnCB.setToolTipText("Default column is F");
+		columnCB.addActionListener(this);
 		tsvOpenB = new JButton("Open .tsv");
 		tsvOpenB.setToolTipText("The .tsv file is the spreadsheet of voting data");
 		tsvOpenB.addActionListener(this);
-		analyzeB = new JButton("Process Election");
-		analyzeB.setToolTipText("Process ballots according to instant-runoff rules");
-		analyzeB.addActionListener(this);
-		
-        tsvOpenB.setEnabled(false);
-        analyzeB.setEnabled(false);
+		exportB = new JButton("Save Results");
+		exportB.setToolTipText("Export election data to .xlsx");
+		exportB.addActionListener(this);
+
+        //tsvOpenB.setEnabled(false);
+        exportB.setEnabled(false);
         
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.setMaximumSize(new Dimension(defaultWidth + 12, 60));
-        buttonPanel.add(cfgOpenB);
+        //buttonPanel.add(cfgOpenB);
 		//buttonPanel.add(cfgGenerateB);
+		buttonPanel.add(columnL);
+		buttonPanel.add(columnCB);
 		buttonPanel.add(tsvOpenB);
-        buttonPanel.add(analyzeB);
+        //buttonPanel.add(exportB);
 
 		mainPanel.add(new JScrollPane(textOut));
         mainPanel.add(buttonPanel);
 
         fileChooser = new JFileChooser();
-        cfgFilter = new FileFilter() {
+        /*cfgFilter = new FileFilter() {
         	public String getDescription() {return "Config Files (*.cfg)"; }
         	public boolean accept(File f) {
         		if (f.isDirectory()) return true;
@@ -109,7 +122,7 @@ public class YAV_Frame extends JFrame implements ActionListener {
         	        return filename.endsWith(".cfg");
         	    }
         	}
-        };
+        };*/
         tsvFilter = new FileFilter() {
         	public String getDescription() {return "Tab Separated Values (*.tsv)";}
         	public boolean accept(File f) {
@@ -138,7 +151,7 @@ public class YAV_Frame extends JFrame implements ActionListener {
 	    /*else if (e.getSource() == cfgGenerateB) {
 	    	fileChooser.setFileFilter(cfgFilter);
 			fileChooser.setSelectedFile(new File("Sample Election Config.cfg"));
-			int returnVal = fileChooser.showSaveDialog(YAV_Frame.this);
+			int returnVal = fileChooser.showSaveDialog(YAV_Election_Analyzer.YAV_Frame.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				//YAV_Config_Generator.go(fileChooser.getSelectedFile());
 			}
@@ -146,7 +159,7 @@ public class YAV_Frame extends JFrame implements ActionListener {
 		/**
 		 * BUTTON PANEL, CFG OPEN BUTTON ACTION:
 		 */
-	    if (e.getSource() == cfgOpenB) {
+	    /*if (e.getSource() == cfgOpenB) {
 	    	System.out.print("Opening the .cfg file... ");
 	    	fileChooser.setFileFilter(cfgFilter);
 	        int returnVal = fileChooser.showOpenDialog(YAV_Frame.this);
@@ -170,11 +183,17 @@ public class YAV_Frame extends JFrame implements ActionListener {
 	        	System.out.println("Operation canceled.");
             	System.out.println();
 	        }
-			analyzeB.setEnabled(false);
-	    }
-	    /**
-		 * BUTTON PANEL, TSV OPEN BUTTON ACTION:
+			exportB.setEnabled(false);
+	    }*/
+		/**
+		 * BUTTON PANEL, COLUMN SELECT DROP-DOWN ACTION:
 		 */
+		if (e.getSource() == columnCB) {
+			ballotStartColumn = columnCB.getSelectedIndex() + 1;
+		}
+		/**
+         * BUTTON PANEL, TSV OPEN BUTTON ACTION:
+         */
 	    else if (e.getSource() == tsvOpenB) {
 	    	System.out.print("Opening the .tsv file... ");
 	    	fileChooser.setFileFilter(tsvFilter);
@@ -182,17 +201,19 @@ public class YAV_Frame extends JFrame implements ActionListener {
 	        if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            tsvFile = fileChooser.getSelectedFile();
 	            System.out.println("\"" + tsvFile.getName() + "\"");
-            	ybb = new YAV_Ballot_Box(cfg);
-	            tsvIsValid = YAV_TSV_Reader.go(tsvFile, ybb, true, ballotStartColumn);
+            	tsvIsValid = false;
+	            if (YAV_TSV_Reader.scan(tsvFile, config, ballotStartColumn)) {
+					ybb = new YAV_Ballot_Box(config);
+					tsvIsValid = YAV_TSV_Reader.read(tsvFile, ybb, true, ballotStartColumn);
+				}
 	            if (tsvIsValid) {
-	            	System.out.println(".tsv opened without any errors. Click \"Process Election\" below.");
-	            	System.out.println();
-	            	analyzeB.setEnabled(true);
+	            	analyzer = new IRV_Analysis(ybb);
+	            	exportB.setEnabled(true);
 	            }
 		        else {
-		        	System.out.println("Could not process all the contents of the .tsv file. See above error report.");
+		        	System.out.println("Could not read/process the contents of the .tsv file. See above error report.");
 		        	System.out.println();
-		        	analyzeB.setEnabled(false);
+		        	exportB.setEnabled(false);
 		        }
 	        }
 	        else if (returnVal == JFileChooser.CANCEL_OPTION) {
@@ -201,18 +222,11 @@ public class YAV_Frame extends JFrame implements ActionListener {
 	        }
 	    }
 	    /**
-		 * BUTTON PANEL, PROCESS ELECTION BUTTON ACTION:
+		 * BUTTON PANEL, SAVE BUTTON ACTION:
 		 */
-	    else if (e.getSource() == analyzeB) {
-	    	if (cfgIsValid && tsvIsValid) {
-	    		analyzer = new IRV_Analysis(ybb);
-	    		System.out.println("IRV analysis completed.");
-            	System.out.println();
-	    	}
-	    	else {
-	    		System.out.println("Please select a valid .cfg and .tsv file first.");
-            	System.out.println();
-	    	}
+	    else if (e.getSource() == exportB) {
+	    	System.out.println("This functionality hasn't been implemented yet. Sorry.");
+	    	System.out.println();
 	    }
 	}
 }

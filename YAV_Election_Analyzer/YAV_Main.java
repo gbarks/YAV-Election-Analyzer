@@ -5,7 +5,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * The main method for LA Youth & Gov's YAV (Y&G Alternative Vote) analysis program.
- * See YAV_Frame for GUI setup and most of the heavy lifting.
+ * See YAV_Election_Analyzer.YAV_Frame for GUI setup and most of the heavy lifting.
  * See IRV_Analysis for how it (by default) analyzes a ballot box (from the .tsv).
  *    (IRV = Instant-Runoff Voting)
  * 
@@ -26,9 +26,9 @@ public class YAV_Main {
 		frame.setVisible(true);
         
 		System.out.println("-----------------------------------------------------------------------------");
-		System.out.println(" Louisiana Youth & Gov YAV Election Analyzer v1.0 (authored by Grant Barker) ");
+		System.out.println(" Louisiana Youth & Gov YAV Election Analyzer v1.1 (authored by Grant Barker) ");
 		System.out.println("-----------------------------------------------------------------------------");
-		System.out.println("To begin, please open your .cfg file with the button below.");
+		System.out.println("Please open your \"Google Sheets\" exported .tsv file below.");
     	System.out.println();
 	}
 }

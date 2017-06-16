@@ -43,9 +43,16 @@ public class IRV_Analysis {
 			}
 			voteTally.add(ithElection);
 		}
+		System.out.println();
+		System.out.println("============ ELECTION WINNER ORDER ============");
 		for (int i = 0; i < ybb.numElections ; i++) {
-			System.out.println(ybb.electionOrder[i] + ": " + winnerOrder.get(i));
+			System.out.println(ybb.electionOrder[i] + ":");
+			for (int j = 0; j < winnerOrder.get(i).size(); j++) {
+				System.out.println(indent + "#" + Integer.toString(j + 1) + ": " + winnerOrder.get(i).get(j));
+			}
 		}
+		System.out.println("============ IRV ANALYSIS COMPLETE ============");
+		System.out.println();
 	}
 
 	/**
@@ -83,9 +90,17 @@ public class IRV_Analysis {
 					}
 				}
 			}
+			if (i == 0) { // Check for candidates with 0 votes in the first round
+				for (String c : ybb.candidateOrder[electionNum]) {
+					if (!ithPass.containsKey(c) && !eliminatedCandidates.contains(c) && !alreadyWon.contains(c)) {
+						ithPass.put(c, 0);
+					}
+				}
+			}
 			for (String c : ithPass.keySet()) {
-				System.out.println(indent + indent + c + ": " + ithPass.get(c) + " votes (" +
-								   df.format(100 * ((float) ithPass.get(c) / totalVotes)) + "%)");
+				System.out.print(indent + indent + c + ": " + ithPass.get(c) + " vote");
+				if (ithPass.get(c) != 1) System.out.print("s");
+				System.out.println(" (" + df.format(100 * ((float) ithPass.get(c) / totalVotes)) + "%)");
 			}
 			for (String c : ithPass.keySet()) {
 				if ((double) ithPass.get(c) / totalVotes > 0.5) {
@@ -115,13 +130,6 @@ public class IRV_Analysis {
 			}
 			ArrayList<String> leastPopular = new ArrayList<String>();
 			int lowestTally = -1;
-			/*for (int n = 0; n < ybb.numCandidates[electionNum]; n++) { // eliminates candidates with 0 votes in this round
-				if (!ithPass.keySet().contains(ybb.candidateOrder[electionNum][n])) {
-					leastPopular.add(ybb.candidateOrder[electionNum][n]);
-					lowestTally = 0;
-					System.out.println(ybb.candidateOrder[electionNum][n] + " has 0 votes");
-				}
-			}*/
 			for (String c : ithPass.keySet()) {
 				if (leastPopular.isEmpty()) {
 					leastPopular.add(c);
