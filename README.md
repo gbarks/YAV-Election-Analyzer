@@ -10,4 +10,4 @@ Louisiana Youth &amp; Government Alternative Vote (YAV) tallying tool. Ranks the
 
 Executable requires Java to be installed.
 
-The .tsv file should be exported from a Google Form formatted [like so](https://i.imgur.com/VO4dD6i.png).
+The .tsv file should be exported from a Google Form formatted [like so](https://github.com/gbarks/YAV-Election-Analyzer/blob/master/YAV%20Google%20Form%20Demo.png).
